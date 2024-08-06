@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using WholesaleManagement.Models;
 
@@ -17,8 +18,20 @@ namespace WholesaleManagement
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Define relationships and constraints here if necessary
+            modelBuilder.Entity<WholesalerStock>()
+                        .HasKey(ws => new { ws.WholesalerId, ws.BeerId });
+
+            modelBuilder.Entity<WholesalerStock>()
+                        .HasOne(ws => ws.Wholesaler)
+                        .WithMany(w => w.WholesalerStocks)
+                        .HasForeignKey(ws => ws.WholesalerId);
+
+            modelBuilder.Entity<WholesalerStock>()
+                        .HasOne(ws => ws.Beer)
+                        .WithMany(b => b.WholesalerStocks)
+                        .HasForeignKey(ws => ws.BeerId);
         }
+
     }
 
 }
